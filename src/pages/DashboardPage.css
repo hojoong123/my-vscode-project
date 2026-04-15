@@ -1,0 +1,200 @@
+.dashboard { }
+
+.dash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
+}
+
+.dash-header h1 { font-size: 24px; font-weight: 700; }
+.dash-header p { color: #94a3b8; font-size: 14px; margin-top: 4px; }
+
+.refresh-btn {
+  background: #0d9488;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.refresh-btn:hover { background: #0f766e; transform: translateY(-1px); }
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 300px;
+  font-size: 16px;
+  color: #94a3b8;
+}
+
+/* 통계 카드 */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.stat-icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.stat-icon-box.blue { background: #eff6ff; }
+.stat-icon-box.green { background: #ecfdf5; }
+.stat-icon-box.yellow { background: #fffbeb; }
+.stat-icon-box.red { background: #fef2f2; }
+.stat-icon-box.teal { background: #f0fdfa; }
+
+.stat-body { display: flex; flex-direction: column; }
+.stat-value { font-size: 24px; font-weight: 700; color: #1a1a2e; }
+.stat-label { font-size: 12px; color: #94a3b8; }
+
+/* 메인 레이아웃 */
+.dash-main {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 20px;
+}
+
+.section-title {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: #1a1a2e;
+}
+
+/* 장치 그리드 */
+.device-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.device-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  border: 2px solid transparent;
+}
+
+.device-card:hover {
+  border-color: #0d9488;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(13,148,136,0.1);
+}
+
+.dc-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dc-code { font-size: 16px; font-weight: 700; color: #1a1a2e; }
+
+.dc-status {
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.dc-status.ok { background: #ecfdf5; color: #059669; }
+.dc-status.warn { background: #fffbeb; color: #d97706; }
+.dc-status.error { background: #fef2f2; color: #dc2626; }
+
+.dc-location { color: #64748b; font-size: 13px; margin-bottom: 14px; }
+
+.dc-footer { }
+.dc-link { color: #0d9488; font-size: 13px; font-weight: 600; }
+
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 50px;
+  color: #94a3b8;
+  background: #fff;
+  border-radius: 14px;
+}
+
+/* 알림 패널 */
+.alert-panel {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.alert-empty {
+  text-align: center;
+  padding: 30px 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.alert-item.critical { background: #fef2f2; }
+.alert-item.warning { background: #fffbeb; }
+
+.alert-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.alert-dot.red { background: #ef4444; }
+.alert-dot.yellow { background: #f59e0b; }
+
+.alert-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.alert-sub { font-size: 12px; color: #64748b; margin-top: 2px; }
+
+.alert-view-btn {
+  width: 100%;
+  background: #f1f5f9;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #0d9488;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.alert-view-btn:hover { background: #e2e8f0; }
