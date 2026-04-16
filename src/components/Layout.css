@@ -1,146 +1,62 @@
 .layout {
-  display: flex;
   min-height: 100vh;
-}
-
-/* 사이드바 */
-.sidebar {
-  width: 240px;
-  background: #0f172a;
-  color: #fff;
   display: flex;
   flex-direction: column;
-  position: fixed;
+}
+
+/* 상단 네비게이션 바 */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #0f172a;
+  padding: 0 24px;
+  height: 56px;
+  position: sticky;
   top: 0;
-  left: 0;
-  bottom: 0;
   z-index: 200;
 }
 
-.sidebar-logo {
+.topbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 24px 20px;
+  gap: 28px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   cursor: pointer;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
 }
 
-.logo-icon { font-size: 28px; }
-.logo-title { font-size: 16px; font-weight: 700; }
-.logo-sub { font-size: 11px; color: #64748b; }
+.logo-icon { font-size: 22px; }
+.logo-text { font-size: 16px; font-weight: 700; color: #2dd4bf; }
 
-.sidebar-nav {
-  flex: 1;
-  padding: 16px 12px;
-  overflow-y: auto;
-}
-
-.nav-section-label {
-  font-size: 11px;
-  color: #475569;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  padding: 12px 12px 6px;
-  font-weight: 600;
-}
-
-.sidebar-item {
+.nav-links {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: #94a3b8;
+  gap: 2px;
+}
+
+.nav-item {
   text-decoration: none;
-  font-size: 14px;
+  color: #94a3b8;
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
   font-weight: 500;
   transition: all 0.15s;
-  margin-bottom: 2px;
 }
 
-.sidebar-item:hover {
-  background: rgba(255,255,255,0.06);
-  color: #fff;
-}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: #fff; }
 
-.sidebar-item.active {
+.nav-item.active {
   background: #0d9488;
   color: #fff;
   font-weight: 600;
 }
 
-.sidebar-icon { font-size: 16px; }
-
-.sidebar-footer {
-  padding: 16px;
-  border-top: 1px solid rgba(255,255,255,0.08);
-}
-
-.admin-info {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-
-.admin-avatar {
-  width: 36px;
-  height: 36px;
-  background: #1e293b;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-}
-
-.admin-name { font-size: 13px; font-weight: 600; }
-.admin-role { font-size: 11px; color: #64748b; }
-
-.logout-btn {
-  width: 100%;
-  background: rgba(239,68,68,0.1);
-  color: #f87171;
-  border: 1px solid rgba(239,68,68,0.2);
-  padding: 8px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.logout-btn:hover {
-  background: rgba(239,68,68,0.2);
-}
-
 /* 오른쪽 영역 */
-.layout-right {
-  margin-left: 240px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-/* 상단바 */
-.topbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #fff;
-  padding: 0 28px;
-  height: 60px;
-  border-bottom: 1px solid #e5e7eb;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.topbar-left { display: flex; align-items: center; }
-.page-title-bar { font-size: 17px; font-weight: 600; color: #1a1a2e; }
-
 .topbar-right {
   display: flex;
   align-items: center;
@@ -151,10 +67,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: #f1f5f9;
-  padding: 8px 14px;
+  background: rgba(255,255,255,0.08);
+  padding: 7px 14px;
   border-radius: 10px;
-  font-size: 14px;
+  font-size: 13px;
+  border: none;
 }
 
 .search-box input {
@@ -163,20 +80,50 @@
   outline: none;
   font-size: 13px;
   width: 150px;
-  color: #1a1a2e;
+  color: #fff;
 }
+
+.search-box input::placeholder { color: #64748b; }
 
 .topbar-icon-btn {
-  background: #f1f5f9;
+  background: rgba(255,255,255,0.08);
   border: none;
-  font-size: 16px;
+  font-size: 15px;
   cursor: pointer;
-  padding: 8px;
+  padding: 7px 10px;
   border-radius: 8px;
   transition: background 0.2s;
+  color: #fff;
 }
 
-.topbar-icon-btn:hover { background: #e2e8f0; }
+.topbar-icon-btn:hover { background: rgba(255,255,255,0.15); }
+
+.topbar-admin {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: 6px;
+}
+
+.admin-label {
+  color: #94a3b8;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.logout-btn {
+  background: rgba(239,68,68,0.15);
+  color: #f87171;
+  border: 1px solid rgba(239,68,68,0.25);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.logout-btn:hover { background: rgba(239,68,68,0.25); }
 
 /* 메인 */
 .main-content {
@@ -190,7 +137,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 28px;
+  padding: 10px 24px;
   background: #fff;
   border-top: 1px solid #e5e7eb;
   font-size: 12px;

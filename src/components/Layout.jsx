@@ -1,90 +1,80 @@
 import { Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "./Layout.css";
 
 export default function Layout() {
   const navigate = useNavigate();
+  const [searchText, setSearchText] = useState("");
 
   const handleLogout = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
 
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchText.trim()) {
+      navigate("/dashboard?search=" + encodeURIComponent(searchText.trim()));
+    }
+  };
+
   return (
     <div className="layout">
-      <aside className="sidebar">
-        <div className="sidebar-logo" onClick={() => navigate("/dashboard")}>
-          <span className="logo-icon">♻️</span>
-          <div>
-            <div className="logo-title">Auto Recycle</div>
-            <div className="logo-sub">Management System</div>
+      <header className="topbar">
+        <div className="topbar-left">
+          <div className="logo" onClick={() => navigate("/dashboard")}>
+            <span className="logo-icon">♻️</span>
+            <span className="logo-text">Auto Recycle Helper</span>
+          </div>
+          <nav className="nav-links">
+            <NavLink to="/dashboard" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+              📊 대시보드
+            </NavLink>
+            <NavLink to="/devices" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+              🖥️ 장치 상세
+            </NavLink>
+            <NavLink to="/logs" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+              📋 분류 기록
+            </NavLink>
+            <NavLink to="/errors" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+              ⚠️ 오류 / 경고
+            </NavLink>
+          </nav>
+        </div>
+        <div className="topbar-right">
+          <form className="search-box" onSubmit={handleSearch}>
+            <span>🔍</span>
+            <input
+              type="text"
+              placeholder="장치 / 통 검색..."
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+            />
+          </form>
+          <button className="topbar-icon-btn">🔔</button>
+          <button className="topbar-icon-btn">⚙️</button>
+          <div className="topbar-admin">
+            <span className="admin-label">👤 관리자</span>
+            <button className="logout-btn" onClick={handleLogout}>로그아웃</button>
           </div>
         </div>
+      </header>
 
-        <nav className="sidebar-nav">
-          <div className="nav-section-label">메인</div>
-          <NavLink to="/dashboard" className={({isActive}) => "sidebar-item" + (isActive ? " active" : "")}>
-            <span className="sidebar-icon">📊</span>
-            <span>대시보드</span>
-          </NavLink>
+      <main className="main-content">
+        <Outlet />
+      </main>
 
-          <div className="nav-section-label">관리</div>
-          <NavLink to="/devices" className={({isActive}) => "sidebar-item" + (isActive ? " active" : "")}>
-            <span className="sidebar-icon">🖥️</span>
-            <span>장치 상세</span>
-          </NavLink>
-          <NavLink to="/logs" className={({isActive}) => "sidebar-item" + (isActive ? " active" : "")}>
-            <span className="sidebar-icon">📋</span>
-            <span>분류 기록</span>
-          </NavLink>
-          <NavLink to="/errors" className={({isActive}) => "sidebar-item" + (isActive ? " active" : "")}>
-            <span className="sidebar-icon">⚠️</span>
-            <span>오류 / 경고</span>
-          </NavLink>
-        </nav>
-
-        <div className="sidebar-footer">
-          <div className="admin-info">
-            <div className="admin-avatar">👤</div>
-            <div>
-              <div className="admin-name">관리자</div>
-              <div className="admin-role">Administrator</div>
-            </div>
-          </div>
-          <button className="logout-btn" onClick={handleLogout}>로그아웃</button>
+      <footer className="bottom-bar">
+        <div className="bottom-left">
+          <span className="dot green"></span>
+          System Online&nbsp;&nbsp;|&nbsp;&nbsp;Last sync: just now&nbsp;&nbsp;|&nbsp;&nbsp;v1.0.0
         </div>
-      </aside>
-
-      <div className="layout-right">
-        <header className="topbar">
-          <div className="topbar-left">
-            <h2 className="page-title-bar">Auto Recycle Helper</h2>
-          </div>
-          <div className="topbar-right">
-            <div className="search-box">
-              <span>🔍</span>
-              <input type="text" placeholder="장치 / 통 검색..." />
-            </div>
-            <button className="topbar-icon-btn">🔔</button>
-            <button className="topbar-icon-btn">⚙️</button>
-          </div>
-        </header>
-
-        <main className="main-content">
-          <Outlet />
-        </main>
-
-        <footer className="bottom-bar">
-          <div className="bottom-left">
-            <span className="dot green"></span>
-            System Online&nbsp;&nbsp;|&nbsp;&nbsp;Last sync: just now&nbsp;&nbsp;|&nbsp;&nbsp;v1.0.0
-          </div>
-          <div className="bottom-right">
-            <span><span className="dot green"></span> NORMAL</span>
-            <span><span className="dot yellow"></span> WARNING</span>
-            <span><span className="dot red"></span> CRITICAL</span>
-          </div>
-        </footer>
-      </div>
+        <div className="bottom-right">
+          <span><span className="dot green"></span> NORMAL</span>
+          <span><span className="dot yellow"></span> WARNING</span>
+          <span><span className="dot red"></span> CRITICAL</span>
+        </div>
+      </footer>
     </div>
   );
 }
