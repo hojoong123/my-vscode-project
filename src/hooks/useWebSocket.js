@@ -7,7 +7,7 @@ export default function useWebSocket(subscriptions = []) {
 
   useEffect(() => {
     const stompClient = new Client({
-      webSocketFactory: () => new SockJS("/ws"),
+      webSocketFactory: () => new SockJS("http://localhost:8080/ws"),
       reconnectDelay: 5000,
       onConnect: () => {
         subscriptions.forEach(({ topic, callback }) => {

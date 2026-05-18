@@ -3,12 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import { getDevice, getBins, resetBin } from "../api/devices";
 import useWebSocket from "../hooks/useWebSocket";
 import "./DeviceDetailPage.css";
+import { canAccessDevice } from "../utils/auth";
 
 const TRASH_LABELS = {
   PLASTIC: { name: "플라스틱 / PET", sub: "RECYCLABLES", emoji: "🥤" },
   CAN: { name: "알루미늄 캔", sub: "METAL", emoji: "🥫" },
   GLASS: { name: "유리병", sub: "GLASS", emoji: "🍾" },
   GENERAL: { name: "일반 쓰레기", sub: "LANDFILL", emoji: "🗑️" },
+  BEVERAGE: { name: "음료수", sub: "BEVERAGE", emoji: "🥤" },
 };
 
 function getBarColor(percent) {
@@ -40,14 +42,19 @@ export default function DeviceDetailPage() {
   ]);
 
   useEffect(() => {
-    Promise.all([getDevice(id), getBins(id)])
-      .then(([deviceRes, binsRes]) => {
-        setDevice(deviceRes.data);
-        setBins(binsRes.data);
-      })
-      .catch((err) => console.error(err))
-      .finally(() => setLoading(false));
-  }, [id]);
+  Promise.all([getDevice(id), getBins(id)])
+    .then(([deviceRes, binsRes]) => {
+      if (!canAccessDevice(deviceRes.data)) {
+        alert("이 장치에 접근할 권한이 없습니다.");
+        navigate("/dashboard");
+        return;
+      }
+      setDevice(deviceRes.data);
+      setBins(binsRes.data);
+    })
+    .catch((err) => console.error(err))
+    .finally(() => setLoading(false));
+}, [id]);
 
   const handleReset = async (binId) => {
     if (!window.confirm("이 통을 리셋하시겠습니까?")) return;
@@ -70,6 +77,11 @@ export default function DeviceDetailPage() {
       .finally(() => setLoading(false));
   };
 
+  // 🔥 통 종류별 분류 상세 페이지로 이동
+  const handleGoToTypeDetail = (typeCode) => {
+    navigate("/logs?type=" + typeCode + "&deviceId=" + id);
+  };
+
   if (loading) return <div className="loading">로딩 중...</div>;
 
   return (
@@ -78,9 +90,18 @@ export default function DeviceDetailPage() {
 
       <div className="detail-top">
         <div className="detail-title-area">
-          <h1>{device?.deviceCode || device?.device_code || "DEVICE"}</h1>
-          <span className="badge-online">● 정상 동작</span>
-          <span className="badge-version">v1.0.0</span>
+          <h1>
+            {(() => {
+              const code = device?.deviceCode || device?.device_code || "";
+              const map = {
+                DEVICE_001: "쓰레기통 (1층)",
+                DEVICE_002: "쓰레기통 (2층)",
+            };
+            return map[code] || device?.deviceName || code || "DEVICE";
+          })()}
+        </h1>
+        <span className="badge-online">● 정상 동작</span>
+        <span className="badge-version">v1.0.0</span>
         </div>
         <div className="detail-location">📍 {device?.location || device?.deviceName || "위치 미설정"}</div>
         <div className="detail-actions">
@@ -145,7 +166,12 @@ export default function DeviceDetailPage() {
               const statusText = getStatusText(percent);
 
               return (
-                <div key={bin.id} className={"bin-card" + (isCritical ? " critical" : "")}>
+                <div
+                  key={bin.id}
+                  className={"bin-card clickable" + (isCritical ? " critical" : "")}
+                  onClick={() => handleGoToTypeDetail(typeCode)}
+                  title={label.name + " 분류 상세 보기"}
+                >
                   <div className="bin-top-row">
                     <div className="bin-info">
                       <span className="bin-emoji">{label.emoji}</span>
@@ -159,7 +185,24 @@ export default function DeviceDetailPage() {
                       <span className={"bin-status-tag " + (isCritical ? "danger" : percent >= 70 ? "warn" : "ok")}>
                         {statusText}
                       </span>
-                      <button className="reset-btn" onClick={() => handleReset(bin.id || bin.binId)}>↻ 리셋</button>
+                      <button
+                        className="detail-link-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleGoToTypeDetail(typeCode);
+                        }}
+                      >
+                        📋 상세
+                      </button>
+                      <button
+                        className="reset-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleReset(bin.id || bin.binId);
+                        }}
+                      >
+                        ↻ 리셋
+                      </button>
                     </div>
                   </div>
                   <div className="bin-bar-track">

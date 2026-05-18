@@ -35,6 +35,8 @@ export default function LoginPage() {
 
       // ✅ 토큰 저장
       localStorage.setItem("token", token);
+      localStorage.setItem("adminName", res.data.adminName || res.data.username || "관리자");
+      localStorage.setItem("username", res.data.username || username);
       console.log("✅ 저장된 토큰:", token);
 
       // ✅ 페이지 이동

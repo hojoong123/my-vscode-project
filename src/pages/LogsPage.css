@@ -10,7 +10,36 @@
 .logs-header h1 { font-size: 24px; font-weight: 700; }
 .logs-header p { color: #94a3b8; font-size: 14px; margin-top: 4px; }
 
-.filter-btns { display: flex; gap: 6px; }
+.filter-tag {
+  display: inline-block;
+  background: #0d9488;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 4px 12px;
+  border-radius: 8px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+.filter-tag.device-tag {
+  background: #1e293b;
+  margin-left: 6px;
+}
+
+.show-all-btn {
+  background: #fef2f2 !important;
+  color: #dc2626 !important;
+  border-color: #fecaca !important;
+  font-weight: 600;
+}
+.show-all-btn:hover {
+  background: #dc2626 !important;
+  color: #fff !important;
+  border-color: #dc2626 !important;
+}
+
+.filter-btns { display: flex; gap: 6px; flex-wrap: wrap; }
 
 .filter-btn {
   background: #fff;
@@ -61,7 +90,6 @@
   align-items: center;
   margin-bottom: 6px;
 }
-
 .log-type-badge {
   background: #eff6ff;
   color: #3b82f6;
@@ -69,6 +97,11 @@
   border-radius: 6px;
   font-size: 12px;
   font-weight: 600;
+}
+
+.log-type-badge.reset {
+  background: #fef3c7;
+  color: #b45309;
 }
 
 .log-time { font-size: 12px; color: #94a3b8; }

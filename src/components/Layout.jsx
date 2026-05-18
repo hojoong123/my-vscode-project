@@ -5,9 +5,12 @@ import "./Layout.css";
 export default function Layout() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState("");
+  const adminName = localStorage.getItem("adminName") || "관리자";
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("adminName");
+    localStorage.removeItem("username");
     navigate("/login");
   };
 
@@ -30,9 +33,6 @@ export default function Layout() {
             <NavLink to="/dashboard" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
               📊 대시보드
             </NavLink>
-            <NavLink to="/devices" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
-              🖥️ 장치 상세
-            </NavLink>
             <NavLink to="/logs" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
               📋 분류 기록
             </NavLink>
@@ -54,7 +54,7 @@ export default function Layout() {
           <button className="topbar-icon-btn">🔔</button>
           <button className="topbar-icon-btn">⚙️</button>
           <div className="topbar-admin">
-            <span className="admin-label">👤 관리자</span>
+            <span className="admin-label">👤 {adminName} 님</span>
             <button className="logout-btn" onClick={handleLogout}>로그아웃</button>
           </div>
         </div>

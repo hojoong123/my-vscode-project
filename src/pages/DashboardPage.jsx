@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { getDevices, getBins, getLogs, getErrors, resetBin } from "../api/devices";
 import useWebSocket from "../hooks/useWebSocket";
 import "./DashboardPage.css";
+import { filterDevicesByRole, filterByDeviceCode } from "../utils/auth";
 
 export default function DashboardPage() {
   const [devices, setDevices] = useState([]);
@@ -14,6 +15,8 @@ export default function DashboardPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const searchQuery = searchParams.get("search") || "";
+  const username = localStorage.getItem("username") || "";
+  const isAdmin = username === "admin";
 
   useWebSocket([
     { topic: "/topic/events", callback: () => fetchAll() },
@@ -23,8 +26,9 @@ export default function DashboardPage() {
   const fetchAll = async () => {
     try {
       const [devRes, logRes, errRes] = await Promise.all([getDevices(), getLogs(), getErrors()]);
-      setDevices(devRes.data);
-      setLogs(logRes.data);
+      const allowedDevices = filterDevicesByRole(devRes.data);
+      setDevices(allowedDevices);
+      setLogs(filterByDeviceCode(logRes.data));
       setErrors(errRes.data);
       if (devRes.data.length > 0) {
         const binRes = await getBins(devRes.data[selectedDeviceIdx]?.id || devRes.data[0].id);
@@ -58,11 +62,36 @@ export default function DashboardPage() {
     }
   };
 
+  const handleResetAll = async () => {
+  if (!window.confirm("현재 장치의 모든 통을 비우시겠습니까?")) return;
+  try {
+    const currentDevice = devices[selectedDeviceIdx];
+    if (!currentDevice) return;
+    await Promise.all(bins.map((bin) => resetBin(bin.id || bin.binId)));
+    const res = await getBins(currentDevice.id);
+    setBins(res.data);
+    alert("모든 통이 비워졌습니다.");
+  } catch (err) {
+    alert("전체 비우기 실패: " + (err.response?.data?.message || err.message));
+  }
+};
+
   const handleRefresh = () => {
     window.location.reload();
   };
 
-  const getBarColor = (percent) => {
+  const getTypeColor = (typeCode) => {
+    switch (typeCode) {
+      case "PLASTIC":  return "#22c55e";
+      case "CAN":      return "#f59e0b";
+      case "GLASS":    return "#3b82f6";
+      case "GENERAL":  return "#94a3b8";
+      case "BEVERAGE": return "#ef4444";
+      default:         return "#94a3b8";
+    }
+  };
+
+  const getPercentColor = (percent) => {
     if (percent >= 90) return "#ef4444";
     if (percent >= 70) return "#f59e0b";
     return "#22c55e";
@@ -82,14 +111,24 @@ export default function DashboardPage() {
     return new Date(dateStr).toLocaleTimeString("ko-KR", { hour: "2-digit", minute: "2-digit", hour12: true });
   };
 
+  const typeOrder = ["PLASTIC", "CAN", "GLASS", "GENERAL", "BEVERAGE"];
+
+  const sortedBins = [...bins].sort((a, b) => {
+    const aType = a.trashTypeCode || a.trash_type_code || a.typeCode || "GENERAL";
+    const bType = b.trashTypeCode || b.trash_type_code || b.typeCode || "GENERAL";
+    const ai = typeOrder.indexOf(aType);
+    const bi = typeOrder.indexOf(bType);
+    return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
+  });
+
   const filteredBins = searchQuery
-    ? bins.filter((bin) => {
+    ? sortedBins.filter((bin) => {
         const q = searchQuery.toLowerCase();
         const typeCode = (bin.trashTypeCode || bin.trash_type_code || bin.typeCode || "").toLowerCase();
         const binCode = (bin.binCode || bin.bin_code || "").toLowerCase();
         return typeCode.includes(q) || binCode.includes(q);
       })
-    : bins;
+    : sortedBins;
 
   const unresolvedErrors = (errors || []).filter((e) => !e.resolved);
 
@@ -113,18 +152,26 @@ export default function DashboardPage() {
 
           {/* 장치 탭 */}
           <div className="device-tabs">
-            {devices.map((dev, idx) => (
-              <button
-                key={dev.id}
-                className={"device-tab" + (selectedDeviceIdx === idx ? " active" : "")}
-                onClick={() => setSelectedDeviceIdx(idx)}
-              >
-                🏢 {dev.deviceCode || dev.device_code || dev.deviceName || "장치 " + (idx + 1)}
-              </button>
-            ))}
-          </div>
+          {devices.map((dev, idx) => {
+            const code = dev.deviceCode || dev.device_code || "";
+            const displayNames = {
+            DEVICE_001: "쓰레기통 (1층)",
+            DEVICE_002: "쓰레기통 (2층)",
+          };
+          const displayName = displayNames[code] || dev.deviceName || "장치 " + (idx + 1);
+          return (
+          <button
+            key={dev.id}
+            className={"device-tab" + (selectedDeviceIdx === idx ? " active" : "")}
+            onClick={() => setSelectedDeviceIdx(idx)}
+          >
+      🏢 {displayName}
+    </button>
+  );
+})}
+</div>
 
-          {/* 통 카드 그리드 */}
+          {/* 통 카드 그리드 (가로 5칸) */}
           <div className="bin-grid">
             {filteredBins.length === 0 ? (
               <div className="empty-msg">
@@ -134,34 +181,47 @@ export default function DashboardPage() {
               filteredBins.map((bin) => {
                 const percent = bin.fillPercent ?? bin.fillLevel ?? bin.fill_percent ?? 0;
                 const typeCode = bin.trashTypeCode || bin.trash_type_code || bin.typeCode || "GENERAL";
-                const barColor = getBarColor(percent);
+                const typeColor = getTypeColor(typeCode);
+                const percentColor = getPercentColor(percent);
                 const typeNames = {
                   PLASTIC: { ko: "플라스틱", en: "Plastic" },
                   CAN: { ko: "캔", en: "Can" },
                   GLASS: { ko: "유리", en: "Glass" },
                   GENERAL: { ko: "일반쓰레기", en: "General Waste" },
+                  BEVERAGE: { ko: "음료수", en: "Beverage" },
                 };
                 const label = typeNames[typeCode] || { ko: typeCode, en: typeCode };
                 const updatedAt = bin.updatedAt || bin.updated_at || bin.lastCollectedAt || bin.last_collected_at;
 
                 return (
-                  <div key={bin.id} className={"bin-card" + (percent >= 90 ? " danger" : percent >= 70 ? " warn" : "")}>
+                  <div
+                    key={bin.id}
+                    className={"bin-card" + (percent >= 90 ? " danger" : percent >= 70 ? " warn" : "")}
+                  >
                     <div className="bin-card-top">
-                      <div>
-                        <div className="bin-ko-name">{label.ko}</div>
-                        <div className="bin-en-name">{label.en}</div>
-                      </div>
-                      <button className="bin-reset-btn" onClick={() => handleReset(bin.id || bin.binId)}>
-                        ↻ Reset
+                      <div className="bin-ko-name" style={{ color: typeColor }}>{label.ko}</div>
+                      <button
+                        className="bin-reset-btn"
+                        onClick={() => handleReset(bin.id || bin.binId)}
+                      >
+                        ↻
                       </button>
                     </div>
-                    <div className="bin-fill-row">
-                      <span className="bin-fill-label">적재량</span>
-                      <span className="bin-fill-value" style={{ color: barColor }}>{percent}%</span>
+
+                    <div className="bin-fill-box">
+                      <div
+                        className="bin-fill-inner"
+                        style={{
+                          height: percent + "%",
+                          background: typeColor,
+                        }}
+                      ></div>
                     </div>
-                    <div className="bin-bar-bg">
-                      <div className="bin-bar-fill" style={{ width: percent + "%", background: barColor }}></div>
+
+                    <div className="bin-percent-text" style={{ color: percentColor }}>
+                      {percent}%
                     </div>
+                    <div className="bin-en-name">{label.en}</div>
                     <div className="bin-time">🕐 {getTimeAgo(updatedAt)}</div>
                   </div>
                 );
@@ -170,9 +230,25 @@ export default function DashboardPage() {
           </div>
 
           <div className="inspection-btn-area">
-            <button className="inspection-btn">✉️ 점검 알림 전송</button>
-          </div>
-        </div>
+            <button
+              className="detail-btn"
+              onClick={() => {
+                const currentDevice = devices[selectedDeviceIdx];
+                if (currentDevice) {
+                  navigate("/devices/" + currentDevice.id);
+                } else {
+                  alert("선택된 장치가 없습니다.");
+                }
+              }}
+            >
+              🖥️ 장치 상세보기
+                </button>
+                  <button className="reset-all-btn" onClick={handleResetAll}>
+              🗑️ 전체 비우기
+                </button>
+                  <button className="inspection-btn">✉️ 점검 알림 전송</button>
+              </div>
+            </div>
 
         {/* 오른쪽: 경고 목록 + 네트워크 상태 */}
         <div className="dash-right-section">
@@ -222,6 +298,7 @@ export default function DashboardPage() {
       </div>
 
       {/* 하단: 분류 기록 테이블 */}
+      {isAdmin && (
       <div className="logs-section">
         <div className="logs-section-header">
           <h2 className="section-title">📋 분류 기록</h2>
@@ -248,93 +325,88 @@ export default function DashboardPage() {
                 </tr>
               ) : (
                 (logs || []).slice(0, 10).map((log) => {
-  const type = log.trashTypeCode || log.trash_type_code || log.trashType || "-";
-  const conf = log.confidence ? Math.round(log.confidence * 100) : 0;
+                  const type = log.trashTypeCode || log.trash_type_code || log.trashType || "-";
+                  const conf = log.confidence ? Math.round(log.confidence * 100) : 0;
+                  const isDefective =
+                    log.isDefective || log.is_defective || (conf > 0 && conf <= 50);
+                  const fill = log.fillPercent ?? log.fill_percent ?? 0;
 
-  // 🔥 핵심: confidence 50 이하 = 강제 불량 처리
-  const isDefective =
-    log.isDefective || log.is_defective || (conf > 0 && conf <= 50);
+                  let statusClass = "success";
+                  let statusText = "Success";
 
-  const fill = log.fillPercent ?? log.fill_percent ?? 0;
+                  if (isDefective) {
+                    statusClass = "critical";
+                    statusText = "Defective";
+                  } else if (fill >= 90) {
+                    statusClass = "critical";
+                    statusText = "Full";
+                  } else if (fill >= 70) {
+                    statusClass = "warning";
+                    statusText = "Almost Full";
+                  } else if (conf > 50 && conf <= 80) {
+                    statusClass = "warning";
+                    statusText = "Low Accuracy";
+                  }
 
-  let statusClass = "success";
-  let statusText = "Success";
-
-  // 🔥 상태 판단 (우선순위 중요)
-  if (isDefective) {
-    statusClass = "critical";
-    statusText = "Defective";
-  } else if (fill >= 90) {
-    statusClass = "critical";
-    statusText = "Full";
-  } else if (fill >= 70) {
-    statusClass = "warning";
-    statusText = "Almost Full";
-  } else if (conf > 50 && conf <= 80) {
-    statusClass = "warning";
-    statusText = "Low Accuracy";
-  }
-
-  return (
-    <tr key={log.id}>
-      <td className="log-time-cell">
-        {getTimeOnly(log.createdAt || log.created_at)}
-      </td>
-
-      <td className="log-device-cell">
-        <strong>{log.binCode || log.bin_code || "-"}</strong>
-      </td>
-
-      <td>
-        <span className={"log-event-badge " + (isDefective ? "critical" : "")}>
-          {isDefective ? "불량 감지" : type + " 분류"}
-        </span>
-      </td>
-
-      {/* 🔥 적재율 색상 (여기가 핵심) */}
-      <td>
-        <span
-          style={{
-            color:
-              isDefective ? "#ef4444" :   // 🔴 불량 (confidence ≤ 50)
-              fill >= 90 ? "#ef4444" :    // 🔴 가득 참
-              fill >= 70 ? "#f59e0b" :    // 🟡 경고
-              "#1a1a2e",                  // 🟢 정상
-            fontWeight: 600
-          }}
-        >
-          {conf > 0 ? conf + "%" : "-"}
-        </span>
-      </td>
-
-      <td>
-        <span className={"log-status-pill " + statusClass}>
-          {statusText}
-        </span>
-      </td>
-
-      <td className="log-note-cell">
-        {log.defectReason ||
-          log.defect_reason ||
-          (isDefective ? "확인 필요" : "정상 처리")}
-      </td>
-
-      <td>
-        <button
-          className="log-detail-link"
-          onClick={() => navigate("/logs")}
-        >
-          View Details
-        </button>
-      </td>
-    </tr>
-  );
-})
+                  return (
+                    <tr key={log.id}>
+                      <td className="log-time-cell">
+                        {getTimeOnly(log.createdAt || log.created_at)}
+                      </td>
+                      <td className="log-device-cell">
+                        <strong>{log.binCode || log.bin_code || "-"}</strong>
+                      </td>
+                      <td>
+                        <span className={"log-event-badge " + 
+                          (log.eventType === "RESET" ? "reset" : 
+                          isDefective ? "critical" : "")}>
+                          {log.eventType === "RESET" 
+                            ? "🗑️ " + type + " 비우기"
+                          : isDefective ? "불량 감지" : type + " 분류"}
+                        </span>
+                      </td>
+                      <td>
+                        <span
+                          style={{
+                            color:
+                              isDefective ? "#ef4444" :
+                              fill >= 90 ? "#ef4444" :
+                              fill >= 70 ? "#f59e0b" :
+                              "#1a1a2e",
+                            fontWeight: 600
+                          }}
+                        >
+                          {conf > 0 ? conf + "%" : "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={"log-status-pill " + statusClass}>
+                          {statusText}
+                        </span>
+                      </td>
+                      <td className="log-note-cell">
+                        {log.defectReason ||
+                          log.defect_reason ||
+                          (isDefective ? "확인 필요" : "정상 처리")}
+                      </td>
+                      <td>
+                        <button
+                          className="log-detail-link"
+                          onClick={() => navigate("/logs")}
+                        >
+                          View Details
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
         </div>
       </div>
+      )}
     </div>
   );
 }
+
