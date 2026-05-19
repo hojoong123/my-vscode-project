@@ -147,6 +147,9 @@ const handleShowAll = () => {
                   <div className="log-item-mid">
                     장치: {log.deviceCode || log.device_code || "-"} &nbsp;|&nbsp;
                     통: {log.binCode || log.bin_code || "-"}
+                    {(log.eventType === "RESET" || log.event_type === "RESET") && (
+                    <> &nbsp;|&nbsp; 👤 {log.performedByName || log.performed_by_name || "-"}</>
+                    )}
                   </div>
                   <div className="log-item-bottom">
                     신뢰도: {log.confidence ? (log.confidence * 100).toFixed(1) + "%" : "-"}
@@ -184,6 +187,12 @@ const handleShowAll = () => {
                     <span className="log-type-badge">
                       {selected.trashTypeCode || selected.trash_type_code || selected.trashType || "-"}
                     </span>
+                  </span>
+                </div>
+                <div className="detail-row">
+                  <span className="detail-key">비운 관리자</span>
+                  <span className="detail-val">
+                    👤 {selected.performedByName || selected.performed_by_name || "알 수 없음"}
                   </span>
                 </div>
                 <div className="detail-row">
