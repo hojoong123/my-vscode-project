@@ -26,7 +26,7 @@ export default function LogsPage() {
 useEffect(() => {
   const typeParam = searchParams.get("type");
   const deviceParam = searchParams.get("deviceId");
-  if (typeParam && ["PLASTIC", "CAN", "GLASS", "GENERAL", "BEVERAGE"].includes(typeParam)) {
+  if (typeParam && ["PLASTIC", "CAN", "GLASS", "GENERAL", "BEVERAGE", "RESET"].includes(typeParam)) {
     setFilter(typeParam);
   } else {
     setFilter("ALL");
