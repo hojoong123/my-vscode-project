@@ -434,7 +434,7 @@ export default function DashboardPage() {
                       log.trashType ||
                       '-';
                     const conf = log.confidence
-                      ? Math.round(log.confidence * 100)
+                      ? Math.round(log.confidence)
                       : 0;
                     const isDefective =
                       log.isDefective ||

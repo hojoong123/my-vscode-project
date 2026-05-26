@@ -152,7 +152,7 @@ const handleShowAll = () => {
                     )}
                   </div>
                   <div className="log-item-bottom">
-                    신뢰도: {log.confidence ? (log.confidence * 100).toFixed(1) + "%" : "-"}
+                    신뢰도: {log.confidence ? (log.confidence).toFixed(1) + "%" : "-"}
                     &nbsp;&nbsp;
                     <span className={"log-status " + (log.status === "PROCESSED" ? "ok" : "pending")}>
                       {log.status || "PROCESSED"}
@@ -198,7 +198,7 @@ const handleShowAll = () => {
                 <div className="detail-row">
                   <span className="detail-key">신뢰도</span>
                   <span className="detail-val confidence-val">
-                    {selected.confidence ? (selected.confidence * 100).toFixed(1) + "%" : "-"}
+                    {selected.confidence ? (selected.confidence).toFixed(1) + "%" : "-"}
                   </span>
                 </div>
                 <div className="detail-row">
