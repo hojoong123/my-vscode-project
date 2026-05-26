@@ -23,24 +23,48 @@ export default function LoginPage() {
     try {
       const res = await login(username, password);
 
-      console.log("🔥 응답:", res.data); // 👈 핵심 확인
+      console.log("🔥 응답:", res.data);
 
-      // ✅ 토큰 안전하게 추출
+      // ✅ 토큰 추출
       const token = res.data.token || res.data.accessToken;
+
+      // ✅ adminId 추출
+      const adminId = res.data.adminId;
+
+      console.log("🔥 adminId:", adminId);
 
       if (!token) {
         console.log("❌ 토큰 없음");
         throw new Error("토큰 없음");
       }
 
-      // ✅ 토큰 저장
+      if (adminId === undefined || adminId === null) {
+        console.log("❌ adminId 없음");
+        throw new Error("adminId 없음");
+      }
+
+      // ✅ localStorage 저장
       localStorage.setItem("token", token);
-      localStorage.setItem("adminName", res.data.adminName || res.data.username || "관리자");
-      localStorage.setItem("username", res.data.username || username);
-      console.log("✅ 저장된 토큰:", token);
+
+      // 문자열로 저장
+      localStorage.setItem("adminId", String(adminId));
+
+      localStorage.setItem(
+        "adminName",
+        res.data.name || res.data.username || "관리자"
+      );
+
+      localStorage.setItem(
+        "username",
+        res.data.username || username
+      );
+
+      console.log("✅ 저장 완료");
+      console.log("✅ 저장된 adminId:", localStorage.getItem("adminId"));
 
       // ✅ 페이지 이동
       navigate("/dashboard");
+
     } catch (err) {
       console.log("🔥 에러:", err);
       setError("아이디 또는 비밀번호가 올바르지 않습니다.");

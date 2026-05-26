@@ -4,6 +4,8 @@ import { getDevices, getBins, getLogs, getErrors, resetBin } from "../api/device
 import useWebSocket from "../hooks/useWebSocket";
 import "./DashboardPage.css";
 import { filterDevicesByRole, filterByDeviceCode } from "../utils/auth";
+import InspectionRequestModal from "../components/InspectionRequestModal";
+import NotificationBell from "../components/NotificationBell";
 
 export default function DashboardPage() {
   const [devices, setDevices] = useState([]);
@@ -17,6 +19,7 @@ export default function DashboardPage() {
   const searchQuery = searchParams.get("search") || "";
   const username = localStorage.getItem("username") || "";
   const isAdmin = username === "admin";
+  const [showInspectionModal, setShowInspectionModal] = useState(false);
 
   useWebSocket([
     { topic: "/topic/events", callback: () => fetchAll() },
@@ -137,13 +140,16 @@ export default function DashboardPage() {
   return (
     <div className="dashboard">
       <div className="dash-top">
-        <div>
-          <h1>운영 현황</h1>
-          <p className="dash-sub">실시간 모니터링 By Network</p>
-          {searchQuery && <p className="search-result-text">🔍 "{searchQuery}" 검색 결과</p>}
-        </div>
-        <button className="refresh-btn" onClick={handleRefresh}>🔄 새로고침</button>
-      </div>
+  <div>
+    <h1>운영 현황</h1>
+    <p className="dash-sub">실시간 모니터링 By Network</p>
+    {searchQuery && <p className="search-result-text">🔍 "{searchQuery}" 검색 결과</p>}
+  </div>
+  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+    <NotificationBell />
+    <button className="refresh-btn" onClick={handleRefresh}>🔄 새로고침</button>
+  </div>
+</div>
 
       <div className="dash-main-grid">
         {/* 왼쪽: 통별 적재 */}
@@ -246,7 +252,12 @@ export default function DashboardPage() {
                   <button className="reset-all-btn" onClick={handleResetAll}>
               🗑️ 전체 비우기
                 </button>
-                  <button className="inspection-btn">✉️ 점검 알림 전송</button>
+                  <button
+                    className="inspection-btn"
+                    onClick={() => setShowInspectionModal(true)}
+                  >
+              ✉️ 점검 알림 전송
+                </button>
               </div>
             </div>
 
@@ -405,6 +416,13 @@ export default function DashboardPage() {
           </table>
         </div>
       </div>
+      )}
+      {showInspectionModal && (
+        <InspectionRequestModal
+          devices={devices}
+          currentDevice={devices[selectedDeviceIdx]}
+          onClose={() => setShowInspectionModal(false)}
+        />
       )}
     </div>
   );

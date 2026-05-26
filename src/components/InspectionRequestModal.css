@@ -1,0 +1,21 @@
+/* InspectionRequestModal.css */
+.modal-backdrop {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  display: flex; align-items: center; justify-content: center; z-index: 1000;
+}
+.modal-box {
+  background: #fff; padding: 24px 28px; border-radius: 12px;
+  width: 420px; max-width: 90vw; box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+.modal-box h3 { margin: 0 0 4px; }
+.modal-sub { color: #64748b; font-size: 13px; margin-bottom: 18px; }
+.modal-label { display: block; margin: 12px 0 6px; font-weight: 600; font-size: 13px; }
+.modal-box select, .modal-box textarea {
+  width: 100%; padding: 8px 10px; border: 1px solid #d1d5db;
+  border-radius: 6px; font-size: 14px; box-sizing: border-box;
+}
+.modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+.btn-cancel, .btn-send { padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: 600; }
+.btn-cancel { background: #e5e7eb; }
+.btn-send { background: #3b82f6; color: #fff; }
+.btn-send:disabled { opacity: 0.6; cursor: not-allowed; }
