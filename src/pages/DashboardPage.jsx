@@ -193,7 +193,6 @@ export default function DashboardPage() {
           )}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <NotificationBell />
           <button className="refresh-btn" onClick={handleRefresh}>
             🔄 새로고침
           </button>

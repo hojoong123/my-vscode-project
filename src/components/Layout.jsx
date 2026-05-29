@@ -1,23 +1,24 @@
-import { Outlet, NavLink, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import "./Layout.css";
+import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import './Layout.css';
+import NotificationBell from './NotificationBell';
 
 export default function Layout() {
   const navigate = useNavigate();
-  const [searchText, setSearchText] = useState("");
-  const adminName = localStorage.getItem("adminName") || "관리자";
+  const [searchText, setSearchText] = useState('');
+  const adminName = localStorage.getItem('adminName') || '관리자';
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("adminName");
-    localStorage.removeItem("username");
-    navigate("/login");
+    localStorage.removeItem('token');
+    localStorage.removeItem('adminName');
+    localStorage.removeItem('username');
+    navigate('/login');
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchText.trim()) {
-      navigate("/dashboard?search=" + encodeURIComponent(searchText.trim()));
+      navigate('/dashboard?search=' + encodeURIComponent(searchText.trim()));
     }
   };
 
@@ -25,18 +26,33 @@ export default function Layout() {
     <div className="layout">
       <header className="topbar">
         <div className="topbar-left">
-          <div className="logo" onClick={() => navigate("/dashboard")}>
+          <div className="logo" onClick={() => navigate('/dashboard')}>
             <span className="logo-icon">♻️</span>
             <span className="logo-text">Auto Recycle Helper</span>
           </div>
           <nav className="nav-links">
-            <NavLink to="/dashboard" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) =>
+                'nav-item' + (isActive ? ' active' : '')
+              }
+            >
               📊 대시보드
             </NavLink>
-            <NavLink to="/logs" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+            <NavLink
+              to="/logs"
+              className={({ isActive }) =>
+                'nav-item' + (isActive ? ' active' : '')
+              }
+            >
               📋 분류 기록
             </NavLink>
-            <NavLink to="/errors" className={({isActive}) => "nav-item" + (isActive ? " active" : "")}>
+            <NavLink
+              to="/errors"
+              className={({ isActive }) =>
+                'nav-item' + (isActive ? ' active' : '')
+              }
+            >
               ⚠️ 오류 / 경고
             </NavLink>
           </nav>
@@ -51,11 +67,12 @@ export default function Layout() {
               onChange={(e) => setSearchText(e.target.value)}
             />
           </form>
-          <button className="topbar-icon-btn">🔔</button>
-          <button className="topbar-icon-btn">⚙️</button>
+          <NotificationBell />
           <div className="topbar-admin">
             <span className="admin-label">👤 {adminName} 님</span>
-            <button className="logout-btn" onClick={handleLogout}>로그아웃</button>
+            <button className="logout-btn" onClick={handleLogout}>
+              로그아웃
+            </button>
           </div>
         </div>
       </header>
@@ -67,12 +84,19 @@ export default function Layout() {
       <footer className="bottom-bar">
         <div className="bottom-left">
           <span className="dot green"></span>
-          System Online&nbsp;&nbsp;|&nbsp;&nbsp;Last sync: just now&nbsp;&nbsp;|&nbsp;&nbsp;v1.0.0
+          System Online&nbsp;&nbsp;|&nbsp;&nbsp;Last sync: just
+          now&nbsp;&nbsp;|&nbsp;&nbsp;v1.0.0
         </div>
         <div className="bottom-right">
-          <span><span className="dot green"></span> NORMAL</span>
-          <span><span className="dot yellow"></span> WARNING</span>
-          <span><span className="dot red"></span> CRITICAL</span>
+          <span>
+            <span className="dot green"></span> NORMAL
+          </span>
+          <span>
+            <span className="dot yellow"></span> WARNING
+          </span>
+          <span>
+            <span className="dot red"></span> CRITICAL
+          </span>
         </div>
       </footer>
     </div>
