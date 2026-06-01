@@ -1,0 +1,50 @@
+.managers-page { padding: 24px 32px; }
+.managers-top h1 { margin: 0 0 4px; font-size: 24px; }
+.managers-sub { color: #64748b; margin: 0 0 24px; }
+
+.manager-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.manager-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  text-align: center;
+  transition: transform 0.15s;
+}
+.manager-card:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+
+.manager-photo-wrap {
+  width: 120px; height: 120px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #f1f5f9;
+  display: flex; align-items: center; justify-content: center;
+}
+.manager-photo { width: 100%; height: 100%; object-fit: cover; }
+.manager-photo-empty { font-size: 60px; color: #cbd5e1; }
+
+.manager-name { font-size: 18px; font-weight: 700; }
+.manager-position {
+  color: #3b82f6; font-size: 13px; font-weight: 600; margin-bottom: 16px;
+}
+
+.manager-info {
+  text-align: left;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 12px;
+  font-size: 13px;
+}
+.manager-info > div {
+  display: flex; justify-content: space-between;
+  padding: 4px 0;
+}
+.manager-info span { color: #94a3b8; }
+.manager-info b { color: #1e293b; }
+
+.empty-msg { grid-column: 1/-1; text-align: center; padding: 60px; color: #94a3b8; }

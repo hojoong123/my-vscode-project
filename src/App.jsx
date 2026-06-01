@@ -5,6 +5,7 @@ import DashboardPage from "./pages/DashboardPage";
 import DeviceDetailPage from "./pages/DeviceDetailPage";
 import LogsPage from "./pages/LogsPage";
 import ErrorsPage from "./pages/ErrorsPage";
+import ManagersPage from "./pages/ManagersPage";
 
 function PrivateRoute({ children }) {
   return localStorage.getItem("token") ? children : <Navigate to="/login" />;
@@ -21,6 +22,7 @@ export default function App() {
           <Route path="devices/:id" element={<DeviceDetailPage />} />
           <Route path="logs" element={<LogsPage />} />
           <Route path="errors" element={<ErrorsPage />} />
+          <Route path="/managers" element={<ManagersPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

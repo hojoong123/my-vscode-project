@@ -7,11 +7,15 @@ export default function Layout() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const adminName = localStorage.getItem('adminName') || '관리자';
+  const role = localStorage.getItem('role');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('adminName');
     localStorage.removeItem('username');
+    localStorage.removeItem('adminId');
+    localStorage.removeItem('role');
+    localStorage.removeItem('floor');
     navigate('/login');
   };
 
@@ -55,6 +59,16 @@ export default function Layout() {
             >
               ⚠️ 오류 / 경고
             </NavLink>
+            {role === 'SUPER_ADMIN' && (
+              <NavLink
+                to="/managers"
+                className={({ isActive }) =>
+                  'nav-item' + (isActive ? ' active' : '')
+                }
+              >
+                👥 관리자 명단
+              </NavLink>
+            )}
           </nav>
         </div>
         <div className="topbar-right">

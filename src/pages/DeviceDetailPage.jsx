@@ -86,7 +86,7 @@ export default function DeviceDetailPage() {
 
   return (
     <div className="device-detail">
-      <button className="back-btn" onClick={() => navigate("/dashboard")}>← 대시보드로 돌아가기</button>
+      <button className="back-btn" onClick={() => navigate("/dashboard")}>← 메인으로 돌아가기</button>
 
       <div className="detail-top">
         <div className="detail-title-area">

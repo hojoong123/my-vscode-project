@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams, useNavigate } from "react-router-dom";
 import { getLogs } from "../api/devices";
 import "./LogsPage.css";
 import { filterByDeviceCode } from "../utils/auth";
+
 
 const TYPE_LABELS = {
   ALL: "전체",
@@ -21,6 +22,7 @@ export default function LogsPage() {
   const [filter, setFilter] = useState("ALL");
   const [deviceFilter, setDeviceFilter] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
 // 🔥 URL ?type=PLASTIC 같은 쿼리스트링이 있으면 해당 필터 자동 적용
 useEffect(() => {
@@ -84,8 +86,14 @@ const handleShowAll = () => {
 });
 
   return (
-    <div className="logs-page">
-      <div className="logs-header">
+  <div className="logs-page">
+    <button
+      className="back-btn"
+      onClick={() => navigate("/dashboard")}
+    >
+      ← 메인으로 돌아가기
+    </button>
+    <div className="logs-header">
         <div>
           <h1>
             📋 분류 기록

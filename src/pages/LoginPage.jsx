@@ -59,7 +59,16 @@ export default function LoginPage() {
         res.data.username || username
       );
 
+      // ✅ 역할/층 저장 (관리자 명단 버튼, 알림 기능에 필요)
+      localStorage.setItem("role", res.data.role || "");
+      if (res.data.floor !== undefined && res.data.floor !== null) {
+        localStorage.setItem("floor", String(res.data.floor));
+      } else {
+        localStorage.removeItem("floor");
+      }
+
       console.log("✅ 저장 완료");
+      console.log("✅ role:", res.data.role, "/ floor:", res.data.floor);
       console.log("✅ 저장된 adminId:", localStorage.getItem("adminId"));
 
       // ✅ 페이지 이동

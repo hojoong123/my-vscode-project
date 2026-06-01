@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getErrors, resolveBinError, resolveDeviceError } from "../api/devices";
 import useWebSocket from "../hooks/useWebSocket";
 import "./ErrorsPage.css";
@@ -6,6 +7,7 @@ import "./ErrorsPage.css";
 export default function ErrorsPage() {
   const [errors, setErrors] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useWebSocket([
     {
@@ -44,11 +46,17 @@ export default function ErrorsPage() {
   const resolved = errors.filter((e) => e.resolved);
 
   return (
-    <div className="errors-page">
-      <div className="page-header">
-        <h1>⚠️ 오류 / 경고</h1>
-        <p>장치 및 통 오류 현황을 확인하고 해결하세요</p>
-      </div>
+  <div className="errors-page">
+    <button
+      className="back-btn"
+      onClick={() => navigate("/dashboard")}
+    >
+      ← 메인으로 돌아가기
+    </button>
+    <div className="page-header">
+      <h1>⚠️ 오류 / 경고</h1>
+      <p>장치 및 통 오류 현황을 확인하고 해결하세요</p>
+    </div>
 
       <div className="error-stats">
         <div className="error-stat-card red">
