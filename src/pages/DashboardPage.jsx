@@ -34,6 +34,10 @@ export default function DashboardPage() {
       callback: (data) => setErrors((prev) => [data, ...prev]),
     },
     {
+      topic: '/topic/devices/1/bins',
+      callback: () => fetchAll(),
+    },
+    {
       topic: '/topic/staff',
 
       callback: (data) => {
@@ -188,10 +192,14 @@ export default function DashboardPage() {
         <div>
           <h1>운영 현황</h1>
           <p className="dash-sub">실시간 모니터링 By Network</p>
-          {searchQuery && <p className="search-result-text">🔍 "{searchQuery}" 검색 결과</p>}
+          {searchQuery && (
+            <p className="search-result-text">🔍 "{searchQuery}" 검색 결과</p>
+          )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          <button className="refresh-btn" onClick={handleRefresh}>🔄 새로고침</button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button className="refresh-btn" onClick={handleRefresh}>
+            🔄 새로고침
+          </button>
         </div>
       </div>
 
@@ -432,7 +440,10 @@ export default function DashboardPage() {
                       ? Math.round(log.confidence)
                       : 0;
                     const rawDefective = log.isDefective || log.is_defective;
-                    const isDefective = conf >= 80 ? false : (rawDefective || (conf > 0 && conf <= 50));
+                    const isDefective =
+                      conf >= 80
+                        ? false
+                        : rawDefective || (conf > 0 && conf <= 50);
                     const fill = log.fillPercent ?? log.fill_percent ?? 0;
 
                     let statusClass = 'success';
