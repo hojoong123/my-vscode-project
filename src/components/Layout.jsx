@@ -2,12 +2,14 @@ import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './Layout.css';
 import NotificationBell from './NotificationBell';
+import ProfileModal from './ProfileModal';
 
 export default function Layout() {
   const navigate = useNavigate();
   const [searchText, setSearchText] = useState('');
   const adminName = localStorage.getItem('adminName') || '관리자';
   const role = localStorage.getItem('role');
+  const [showProfile, setShowProfile] = useState(false);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -83,11 +85,17 @@ export default function Layout() {
           </form>
           <NotificationBell />
           <div className="topbar-admin">
-            <span className="admin-label">👤 {adminName} 님</span>
-            <button className="logout-btn" onClick={handleLogout}>
-              로그아웃
-            </button>
-          </div>
+        <span
+          className="admin-label"
+          onClick={() => setShowProfile(true)}
+          style={{ cursor: "pointer" }}
+        >
+          👤 {adminName} 님
+        </span>
+        <button className="logout-btn" onClick={handleLogout}>
+          로그아웃
+        </button>
+      </div>
         </div>
       </header>
 
@@ -113,6 +121,7 @@ export default function Layout() {
           </span>
         </div>
       </footer>
+      {showProfile && <ProfileModal onClose={() => setShowProfile(false)} />}
     </div>
   );
 }
