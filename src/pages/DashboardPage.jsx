@@ -168,19 +168,26 @@ export default function DashboardPage() {
     return (ai === -1 ? 999 : ai) - (bi === -1 ? 999 : bi);
   });
 
-  const filteredBins = searchQuery
-    ? sortedBins.filter((bin) => {
-        const q = searchQuery.toLowerCase();
-        const typeCode = (
-          bin.trashTypeCode ||
-          bin.trash_type_code ||
-          bin.typeCode ||
-          ''
-        ).toLowerCase();
-        const binCode = (bin.binCode || bin.bin_code || '').toLowerCase();
-        return typeCode.includes(q) || binCode.includes(q);
-      })
-    : sortedBins;
+  // ✅ 음료(BEVERAGE) 통 제외
+const binsWithoutBeverage = sortedBins.filter((bin) => {
+  const typeCode =
+    bin.trashTypeCode || bin.trash_type_code || bin.typeCode || '';
+  return typeCode !== 'BEVERAGE';
+});
+
+const filteredBins = searchQuery
+  ? binsWithoutBeverage.filter((bin) => {
+      const q = searchQuery.toLowerCase();
+      const typeCode = (
+        bin.trashTypeCode ||
+        bin.trash_type_code ||
+        bin.typeCode ||
+        ''
+      ).toLowerCase();
+      const binCode = (bin.binCode || bin.bin_code || '').toLowerCase();
+      return typeCode.includes(q) || binCode.includes(q);
+    })
+  : binsWithoutBeverage;
 
   const unresolvedErrors = (errors || []).filter((e) => !e.resolved);
 
